@@ -209,12 +209,3 @@ if __name__ == "__main__":
     print("Plotting data...")
     plot_data(df, franchise_stats)
 
-if __name__ == "__main__":
-    print("Loading processed data...")
-    df = load_processed_data()
-    
-    print("Analyzing data...")
-    analyze_movies(df)
-    
-    print("Plotting data...")
-    plot_data(df)
