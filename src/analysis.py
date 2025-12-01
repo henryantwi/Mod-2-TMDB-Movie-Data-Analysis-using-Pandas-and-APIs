@@ -7,7 +7,10 @@ def load_processed_data(filename="data/processed/movies_cleaned.csv"):
     """Loads processed data from CSV."""
     if not os.path.exists(filename):
         raise FileNotFoundError(f"{filename} not found. Please run process_data.py first.")
-    return pd.read_csv(filename)
+    df = pd.read_csv(filename)
+    df['release_date'] = pd.to_datetime(df['release_date'])
+    df['release_year'] = df['release_date'].dt.year
+    return df
 
 def analyze_movies(df):
     """Performs comprehensive analysis on the movie dataset."""
