@@ -33,6 +33,13 @@ def process_data(df):
                  df[col] = df[col].apply(lambda x: x['name'] if isinstance(x, dict) and 'name' in x else "")
             else:
                 df[col] = df[col].apply(extract_names)
+                
+    # Inspect extracted columns using value_counts() to identify anomalies
+    print("\n--- Inspecting Extracted Columns ---")
+    for col in json_cols:
+        if col in df.columns:
+            print(f"\nTop 5 values for {col}:")
+            print(df[col].value_counts().head(5))
 
     # 3. Convert column datatypes
     numeric_cols = ['budget', 'id', 'popularity', 'revenue', 'vote_average', 'vote_count', 'runtime']
@@ -50,8 +57,12 @@ def process_data(df):
     df['budget_musd'] = df['budget'] / 1000000
     df['revenue_musd'] = df['revenue'] / 1000000
     
-    # Handle vote_count = 0 (if any) - Assignment says "Analyze and adjust", strictly we can drop or leave. 
-    # For now, we'll keep them but they won't rank high.
+    # Handle vote_count = 0
+    # Movies with vote_count = 0 -> Analyze their vote_average and adjust accordingly.
+    # If vote_count is 0, vote_average should likely be 0 or NaN to avoid skewing ranking.
+    # We will set it to 0.
+    if 'vote_count' in df.columns and 'vote_average' in df.columns:
+        df.loc[df['vote_count'] == 0, 'vote_average'] = 0
     
     # Replace placeholders in overview/tagline
     for col in ['overview', 'tagline']:
