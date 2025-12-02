@@ -114,7 +114,17 @@ def process_data(df):
     
     df['budget_musd'] = df['budget_musd'].fillna(0)
     df['revenue_musd'] = df['revenue_musd'].fillna(0)
-    df['roi'] = df.apply(lambda row: row['revenue_musd'] / row['budget_musd'] if row['budget_musd'] > 0 else 0, axis=1)
+    
+    # Calculate ROI (Return on Investment) for each movie
+    def calculate_roi(row):
+        # If budget is greater than 0, calculate ROI as revenue / budget
+        # Otherwise return 0 to avoid division by zero
+        if row['budget_musd'] > 0:
+            return row['revenue_musd'] / row['budget_musd']
+        else:
+            return 0
+    
+    df['roi'] = df.apply(calculate_roi, axis=1)
     df['profit'] = df['revenue_musd'] - df['budget_musd']
     
     return df
