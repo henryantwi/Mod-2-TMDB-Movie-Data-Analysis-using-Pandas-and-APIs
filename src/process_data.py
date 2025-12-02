@@ -51,9 +51,12 @@ def process_data(df):
     for col in ['budget', 'revenue', 'runtime']:
         df[col] = df[col].replace(0, pd.NA)
         
-    df['budget_musd'] = df['budget'] / 1000000
+    df['budget_musd'] = df['budget'] / 1_000_000
     df['revenue_musd'] = df['revenue'] / 1000000
-    
+
+    #   drop original budget and revenue columns
+    df = df.drop(columns=['budget', 'revenue'])
+        
     if 'vote_count' in df.columns and 'vote_average' in df.columns:
         df.loc[df['vote_count'] == 0, 'vote_average'] = 0
     
@@ -96,6 +99,8 @@ def process_data(df):
             
         df['director'] = df['credits'].apply(get_director)
         df['cast'] = df['credits'].apply(get_cast)
+
+        
         df['cast_size'] = df['credits'].apply(lambda x: len(x.get('cast', [])) if isinstance(x, dict) else 0)
         df['crew_size'] = df['credits'].apply(lambda x: len(x.get('crew', [])) if isinstance(x, dict) else 0)
         
