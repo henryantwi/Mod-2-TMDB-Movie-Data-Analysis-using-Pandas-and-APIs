@@ -110,7 +110,7 @@ def process_data(df):
     df = df[final_cols]
     
     # 11. Reset index and calculate ROI/profit
-    df = df.reset_index(drop=True)
+    df = df.reset_index(drop=True) # to clear fragments
     
     df['budget_musd'] = df['budget_musd'].fillna(0)
     df['revenue_musd'] = df['revenue_musd'].fillna(0)
