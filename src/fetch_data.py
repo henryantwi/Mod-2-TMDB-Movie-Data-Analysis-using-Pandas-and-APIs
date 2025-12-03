@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -37,12 +38,13 @@ def fetch_specific_movies(movie_ids):
             movies.append(data)
     return movies
 
-def save_raw_data(data, filename="data/raw/movies.json"):
+def save_raw_data(data, filename=Path("data") / "raw" / "movies.json"):
     """Saves the fetched data to a JSON file."""
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
-    with open(filename, 'w', encoding='utf-8') as f:
+    path = Path(filename)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('w', encoding='utf-8') as f:
         json.dump(data, f, indent=4)
-    print(f"Saved {len(data)} movies to {filename}")
+    print(f"Saved {len(data)} movies to {path}")
 
 if __name__ == "__main__":
     # List of IDs from assignment

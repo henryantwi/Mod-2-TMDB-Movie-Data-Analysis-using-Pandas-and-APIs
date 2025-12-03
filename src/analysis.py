@@ -1,13 +1,14 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import os
+from pathlib import Path
+
 
 def load_processed_data(filename="data/processed/movies_cleaned.csv"):
     """Loads processed data from CSV."""
-    if not os.path.exists(filename):
+    filepath = Path(filename)
+    if not filepath.exists():
         raise FileNotFoundError(f"{filename} not found. Please run process_data.py first.")
-    df = pd.read_csv(filename)
+    
+    df = pd.read_csv(filepath)
     df['release_date'] = pd.to_datetime(df['release_date'])
     df['release_year'] = df['release_date'].dt.year
     return df
@@ -15,8 +16,8 @@ def load_processed_data(filename="data/processed/movies_cleaned.csv"):
 def analyze_movies(df):
     """Performs comprehensive analysis on the movie dataset."""
     
-    # --- 1. Identify Best/Worst Performing Movies ---
-    print("\n=== 1. Best/Worst Performing Movies ===")
+    # --- 2. Define a User-Defined Function (UDF) to streamline ranking operations ---
+    print("\n=== 2. User-Defined Function for Ranking ===")
     
     def rank_movies(df, metric, ascending=False, top_n=5, filter_col=None, filter_val=None):
         data = df.copy()
@@ -67,8 +68,8 @@ def analyze_movies(df):
     print(rank_movies(df, 'popularity'))
     
     
-    # --- 2. Advanced Movie Filtering ---
-    print("\n=== 2. Advanced Movie Filtering ===")
+    # --- 3. Filter the dataset for specific queries ---
+    print("\n=== 3. Advanced Movie Filtering ===")
     
     # Search 1: Best-rated Sci-Fi Action movies starring Bruce Willis
     # Note: genres and cast are pipe-separated strings
@@ -89,8 +90,8 @@ def analyze_movies(df):
     print(uma_qt_movies[['title', 'runtime', 'release_date']])
     
     
-    # --- 3. Franchise vs Standalone ---
-    print("\n=== 3. Franchise vs Standalone Analysis ===")
+    # --- 4. Franchise vs. Standalone Movie Performance ---
+    print("\n=== 4. Franchise vs Standalone Analysis ===")
     
     df['is_franchise'] = df['belongs_to_collection'].apply(lambda x: True if x else False)
     
@@ -106,10 +107,9 @@ def analyze_movies(df):
     print(franchise_stats)
     
     
-    # --- 4. Most Successful Franchises & Directors ---
-    print("\n=== 4. Most Successful Franchises & Directors ===")
+    # --- 5. Find the Most Successful Movie Franchises ---
+    print("\n=== 5. Most Successful Franchises ===")
     
-    # Franchises
     franchise_df = df[df['is_franchise']].groupby('belongs_to_collection').agg({
         'title': 'count',
         'budget_musd': ['sum', 'mean'],
@@ -120,7 +120,10 @@ def analyze_movies(df):
     print("\n--- Top 5 Franchises by Total Revenue ---")
     print(franchise_df.sort_values('total_revenue', ascending=False).head(5))
     
-    # Directors
+    
+    # --- 6. Find the Most Successful Directors ---
+    print("\n=== 6. Most Successful Directors ===")
+    
     director_df = df.groupby('director').agg({
         'title': 'count',
         'revenue_musd': 'sum',
@@ -136,76 +139,11 @@ def analyze_movies(df):
 
     return franchise_stats, franchise_df, director_df
 
-def plot_data(df, franchise_stats):
-    """Generates plots for analysis."""
-    sns.set_theme(style="whitegrid")
-    os.makedirs('data/processed', exist_ok=True)
-    
-    # 1. Revenue vs Budget
-    plt.figure(figsize=(10, 6))
-    sns.scatterplot(data=df, x='budget_musd', y='revenue_musd', hue='is_franchise', alpha=0.7)
-    plt.title('Revenue vs Budget')
-    plt.xlabel('Budget (MUSD)')
-    plt.ylabel('Revenue (MUSD)')
-    plt.savefig('data/processed/revenue_vs_budget.png')
-    plt.close()
-    print("Saved revenue_vs_budget.png")
-    
-    # 2. ROI Distribution by Genre (Top 5 genres)
-    # Explode genres first
-    df_genres = df.assign(genre=df['genres'].str.split('|')).explode('genre')
-    top_genres = df_genres['genre'].value_counts().head(5).index
-    df_top_genres = df_genres[df_genres['genre'].isin(top_genres)]
-    
-    plt.figure(figsize=(12, 6))
-    sns.boxplot(data=df_top_genres, x='genre', y='roi')
-    plt.title('ROI Distribution by Top 5 Genres')
-    plt.ylim(-1, 10) # Limit y-axis to see distribution better
-    plt.savefig('data/processed/roi_by_genre.png')
-    plt.close()
-    print("Saved roi_by_genre.png")
-    
-    # 3. Popularity vs Rating
-    plt.figure(figsize=(10, 6))
-    sns.scatterplot(data=df, x='vote_average', y='popularity', alpha=0.6)
-    plt.title('Popularity vs Rating')
-    plt.xlabel('Vote Average')
-    plt.ylabel('Popularity')
-    plt.savefig('data/processed/popularity_vs_rating.png')
-    plt.close()
-    print("Saved popularity_vs_rating.png")
-    
-    # 4. Franchise vs Standalone Comparison (Bar Chart)
-    # Reset index to plot
-    franchise_plot = franchise_stats.reset_index()
-    # Melt for seaborn
-    franchise_melt = franchise_plot.melt(id_vars='is_franchise', value_vars=['revenue_musd', 'budget_musd'], var_name='Metric', value_name='Value (MUSD)')
-    
-    plt.figure(figsize=(10, 6))
-    sns.barplot(data=franchise_melt, x='Metric', y='Value (MUSD)', hue='is_franchise')
-    plt.title('Franchise vs Standalone: Revenue & Budget')
-    plt.savefig('data/processed/franchise_vs_standalone.png')
-    plt.close()
-    print("Saved franchise_vs_standalone.png")
-
-    # 5. Yearly Trends in Box Office Performance
-    yearly_stats = df.groupby('release_year')['revenue_musd'].sum().reset_index()
-    plt.figure(figsize=(12, 6))
-    sns.lineplot(data=yearly_stats, x='release_year', y='revenue_musd', marker='o')
-    plt.title('Yearly Trends in Box Office Revenue')
-    plt.xlabel('Year')
-    plt.ylabel('Total Revenue (MUSD)')
-    plt.savefig('data/processed/yearly_trends.png')
-    plt.close()
-    print("Saved yearly_trends.png")
 
 if __name__ == "__main__":
     print("Loading processed data...")
     df = load_processed_data()
     
     print("Analyzing data...")
-    franchise_stats, _, _ = analyze_movies(df)
-    
-    print("Plotting data...")
-    plot_data(df, franchise_stats)
+    franchise_stats, franchise_df, director_df = analyze_movies(df)
 

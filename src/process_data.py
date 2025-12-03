@@ -1,17 +1,19 @@
 import pandas as pd
+from pandas import DataFrame
 import json
-import os
+from pathlib import Path
 
 def load_raw_data(filename="data/raw/movies.json"):
     """Loads raw data from JSON file."""
-    if not os.path.exists(filename):
+    filepath = Path(filename)
+    if not filepath.exists():
         raise FileNotFoundError(f"{filename} not found. Please run fetch_data.py first.")
     
-    with open(filename, 'r', encoding='utf-8') as f:
+    with filepath.open('r', encoding='utf-8') as f:
         data = json.load(f)
     return pd.DataFrame(data)
 
-def process_data(df):
+def process_data(df) -> DataFrame:
     """
     Cleans and transforms the movie dataframe according to assignment requirements.
     """
@@ -131,16 +133,18 @@ def process_data(df):
 
 def save_processed_data(df, filename="data/processed/movies_cleaned.csv"):
     """Saves processed dataframe to CSV."""
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
-    df.to_csv(filename, index=False)
-    print(f"Saved processed data to {filename}")
+    filepath = Path(filename)
+    # Create parent directories if they don't exist
+    filepath.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(filepath, index=False)
+    print(f"Saved processed data to {filepath}")
 
 if __name__ == "__main__":
     print("Loading raw data...")
-    df = load_raw_data()
+    df: DataFrame = load_raw_data()
     
     print("Processing data...")
-    df_clean = process_data(df)
+    df_clean: DataFrame = process_data(df)
     
     print("Saving processed data...")
     save_processed_data(df_clean)
