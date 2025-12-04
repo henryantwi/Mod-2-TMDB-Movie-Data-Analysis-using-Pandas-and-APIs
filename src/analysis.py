@@ -16,7 +16,7 @@ def load_processed_data(filename="data/processed/movies_cleaned.csv"):
 def analyze_movies(df):
     """Performs comprehensive analysis on the movie dataset."""
     
-    # --- 2. Define a User-Defined Function (UDF) to streamline ranking operations ---
+    # 2. Define a User-Defined Function (UDF) to streamline ranking operations
     print("\n=== 2. User-Defined Function for Ranking ===")
     
     def rank_movies(df, metric, ascending=False, top_n=5, filter_col=None, filter_val=None):
