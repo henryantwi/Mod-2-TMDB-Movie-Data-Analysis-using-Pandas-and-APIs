@@ -144,10 +144,10 @@ def create_all_visualizations(df):
     plot_popularity_vs_rating(df, output_dir)
 
     # # 4. Yearly Trends
-    # plot_yearly_trends(df, output_dir)
+    plot_yearly_trends(df, output_dir)
 
     # # 5. Franchise vs Standalone
-    # plot_franchise_vs_standalone(df, output_dir)
+    plot_franchise_vs_standalone(df, output_dir)
 
     print("\n=== All visualizations complete! ===")
 
