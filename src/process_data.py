@@ -139,6 +139,7 @@ def save_processed_data(df, filename="data/processed/movies_cleaned.csv"):
     df.to_csv(filepath, index=False)
     print(f"Saved processed data to {filepath}")
 
+
 if __name__ == "__main__":
     print("Loading raw data...")
     df: DataFrame = load_raw_data()
