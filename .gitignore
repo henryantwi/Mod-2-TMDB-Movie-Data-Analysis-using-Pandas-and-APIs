@@ -7,8 +7,10 @@ wheels/
 *.egg-info
 
 .idea/
+.ipynb_checkpoints/
 
 .cursor/
+.zencoder
 
 # Virtual environments
 .venv
