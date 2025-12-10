@@ -111,9 +111,10 @@ We use a **scatter plot** because:
 
 ### 📚 First, What's ROI?
 **ROI = Return on Investment**
-- If you spend $100 and make $300, your ROI is 2 (you got 2x your money back)
+- If you spend $100 and make $300, your ROI is 2 (you made 2 times what you spent in profit)
+- Put another way: you got your $100 back plus $200 more
 - Higher ROI = better deal
-- ROI of 5 means you made 5 times what you spent!
+- ROI of 5 means you made 5 times your initial investment in profit!
 
 ### 🎨 Why This Plot Type?
 We use a **box plot** because:
