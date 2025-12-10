@@ -1,73 +1,144 @@
-# TMDB Movie Data Analysis
+# TMDB Movie Data Analysis 🎬
 
-## Overview
-This project analyzes movie data from the TMDB API. It fetches data, processes it to clean and transform it, and performs exploratory data analysis (EDA) to identify trends and rank movies.
+## What This Project Is About
+
+I built this project to dive into movie data and see what makes films successful at the box office. Using data from The Movie Database (TMDB) API, I wanted to answer questions like: Do franchises really outperform standalone films? Which directors consistently deliver hits? And is there actually a relationship between a movie's budget and its revenue?
+
+This turned into a full ETL (Extract, Transform, Load) pipeline that pulls movie data, cleans it up, runs analysis, and generates visualizations — all automated so I can easily update it with new movies.
+
+## My Approach
+
+### Breaking Down the Problem
+
+I tackled this project in stages, which made it much easier to debug and iterate:
+
+1. **Data Extraction** — First, I needed to get the data. I wrote a script to hit the TMDB API and pull detailed information for a curated list of movies (mostly blockbusters, since they have the most interesting financial data).
+
+2. **Data Cleaning & Transformation** — Raw API data is messy. JSON nested inside JSON, inconsistent formats, missing values... the usual. I spent a good chunk of time figuring out how to flatten the nested structures (like extracting genre names from JSON objects) and handling edge cases like movies with zero budget or revenue.
+
+3. **Analysis** — Once the data was clean, I built functions to rank movies by different metrics and answer specific questions. I also added filters (like requiring a minimum budget for ROI calculations) to avoid misleading results from low-budget outliers.
+
+4. **Visualization** — Numbers are great, but charts tell the story better. I created several plots to visualize trends and comparisons.
+
+5. **Pipeline Orchestration** — Finally, I tied everything together in a single pipeline script so I can run the entire process with one command.
+
+### Challenges I Ran Into
+
+- **Nested JSON parsing**: The credits data (cast and crew) was deeply nested. I had to write custom functions to extract director names and top cast members.
+  
+- **Handling missing data**: Some movies had budget or revenue listed as 0, which would break ROI calculations. I converted these to NaN and handled them appropriately in the analysis.
+
+- **Filtering for meaningful results**: Without filters, the "highest ROI" list was dominated by tiny films that happened to do okay. Adding minimum thresholds (like budget ≥ $10M) gave much more useful insights.
 
 ## Project Structure
+
 ```
 Movie-Data-Analysis/
 ├── data/
-│   ├── raw/                    # Raw data from API
+│   ├── raw/                    # Raw JSON from TMDB API
 │   │   └── movies.json
-│   └── processed/              # Cleaned data and visualizations
+│   └── processed/              # Cleaned CSV + generated charts
 │       └── movies_cleaned.csv
 ├── notebooks/
-│   └── movie_analysis.ipynb    # Interactive analysis notebook
+│   └── movie_analysis.ipynb    # Interactive exploration
 ├── src/
-│   ├── fetch_data.py           # Step 1: Fetch data from TMDB API
-│   ├── process_data.py         # Step 2: Clean and transform data
-│   ├── analysis.py             # Step 3: KPI implementation and analysis
-│   └── visualization.py        # Step 4: Data visualization
+│   ├── fetch_data.py           # Pulls data from TMDB API
+│   ├── process_data.py         # Cleans and transforms the data
+│   ├── analysis.py             # Runs rankings and analysis
+│   ├── visualization.py        # Generates charts
+│   └── pipeline.py             # Orchestrates the full ETL process
 ├── requirements.txt
 └── README.md
 ```
 
-## Setup
+## Getting Started
 
-1.  **Install Dependencies**:
+### Prerequisites
+
+You'll need Python 3.8+ and a TMDB API key.
+
+### Installation
+
+1. **Clone the repo and install dependencies**:
     ```bash
     pip install -r requirements.txt
     ```
 
-2.  **API Key**:
-    - Obtain an API Key from [TMDB](https://www.themoviedb.org/documentation/api).
-    - Create a `.env` file in the root directory.
-    - Add your key: `TMDB_API_KEY=your_api_key_here`
+2. **Set up your API key**:
+    - Get a free API key from [TMDB](https://www.themoviedb.org/documentation/api)
+    - Create a `.env` file in the project root
+    - Add your key:
+      ```
+      TMDB_API_KEY=your_api_key_here
+      ```
 
-## Usage
+### Running the Pipeline
 
-1.  **Fetch Data** (Step 1):
-    ```bash
-    python src/fetch_data.py
-    ```
-    This will save raw data to `data/raw/movies.json`.
+The easiest way to run everything is with the pipeline script:
 
-2.  **Process Data** (Step 2):
-    ```bash
-    python src/process_data.py
-    ```
-    This will clean the data and save it to `data/processed/movies_cleaned.csv`.
+```bash
+# Run the full pipeline (fetch → process → analyze → visualize)
+python src/pipeline.py
 
-3.  **Analyze Data** (Step 3):
-    ```bash
-    python src/analysis.py
-    ```
-    This performs KPI analysis including:
-    - Best/Worst performing movies (revenue, profit, ROI, ratings)
-    - Advanced movie filtering and search queries
-    - Franchise vs. standalone movie comparison
-    - Most successful franchises and directors
+# If you already have raw data and just want to re-process it
+python src/pipeline.py --skip-fetch
 
-4.  **Generate Visualizations** (Step 4):
-    ```bash
-    python src/visualization.py
-    ```
-    This creates the following charts in `data/processed/`:
-    - `revenue_vs_budget.png` - Revenue vs Budget scatter plot
-    - `roi_by_genre.png` - ROI distribution by top 5 genres
-    - `popularity_vs_rating.png` - Popularity vs Rating scatter plot
-    - `yearly_trends.png` - Yearly box office revenue trends
-    - `franchise_vs_standalone.png` - Franchise vs Standalone comparison
+# Run individual steps if needed
+python src/pipeline.py --step extract
+python src/pipeline.py --step transform
+python src/pipeline.py --step analyze
+python src/pipeline.py --step visualize
+```
 
-## Interactive Notebook
-For interactive exploration, open `notebooks/movie_analysis.ipynb` which combines all steps with inline visualizations.
+### Running Steps Individually
+
+If you prefer to run each step separately:
+
+```bash
+# 1. Fetch data from TMDB
+python src/fetch_data.py
+
+# 2. Clean and process the data
+python src/process_data.py
+
+# 3. Run analysis
+python src/analysis.py
+
+# 4. Generate visualizations
+python src/visualization.py
+```
+
+## What the Analysis Covers
+
+- **Top/Bottom Rankings**: Movies ranked by revenue, budget, profit, ROI, ratings, and popularity
+- **Filtered Queries**: Finding specific movies (e.g., sci-fi action films with Bruce Willis)
+- **Franchise vs Standalone**: Comparing performance metrics between franchise films and one-offs
+- **Director Analysis**: Which directors have the highest total revenue and best average ratings
+- **Franchise Deep Dive**: Most successful movie franchises by total revenue
+
+## Visualizations Generated
+
+The pipeline creates these charts in `data/processed/`:
+
+| Chart | What It Shows |
+|-------|---------------|
+| `revenue_vs_budget.png` | Scatter plot showing the relationship between budget and revenue |
+| `roi_by_genre.png` | Box plot of ROI distribution across the top 5 genres |
+| `popularity_vs_rating.png` | How popularity correlates (or doesn't) with ratings |
+| `yearly_trends.png` | Box office revenue trends over time |
+| `franchise_vs_standalone.png` | Side-by-side comparison of franchise vs standalone metrics |
+
+## Interactive Exploration
+
+For a more hands-on experience, check out the Jupyter notebook at `notebooks/movie_analysis.ipynb`. It walks through the same analysis with inline outputs and lets you experiment with the data.
+
+## Key Takeaways
+
+After running the analysis, a few things stood out:
+- Franchise films generally have higher budgets AND higher revenues, but the ROI isn't always better
+- There's a surprisingly weak correlation between ratings and popularity
+- A handful of directors dominate the total revenue charts
+
+---
+
+*Built as part of a Data Engineering learning project. Feel free to fork and adapt for your own movie analysis!*
