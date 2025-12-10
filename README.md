@@ -128,6 +128,8 @@ The pipeline creates these charts in `data/processed/`:
 | `yearly_trends.png` | Box office revenue trends over time |
 | `franchise_vs_standalone.png` | Side-by-side comparison of franchise vs standalone metrics |
 
+**📚 New to data visualization?** Check out [VISUALIZATION_GUIDE.md](VISUALIZATION_GUIDE.md) for a beginner-friendly explanation of each chart type, why it was chosen, and how to interpret the results. Perfect for code reviews!
+
 ## Interactive Exploration
 
 For a more hands-on experience, check out the Jupyter notebook at `notebooks/movie_analysis.ipynb`. It walks through the same analysis with inline outputs and lets you experiment with the data.
