@@ -42,10 +42,12 @@ def run_extract(movie_ids=None, skip_if_exists=False):
     
     raw_data_path = Path("data/raw/movies.json")
     
+    # Check if data already exists and skip if requested
     if skip_if_exists and raw_data_path.exists():
         print(f"Raw data already exists at {raw_data_path}. Skipping fetch.")
         return True
     
+    # Use default IDs if none provided
     if movie_ids is None:
         movie_ids = DEFAULT_MOVIE_IDS
     
