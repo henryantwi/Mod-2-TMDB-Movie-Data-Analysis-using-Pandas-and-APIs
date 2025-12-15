@@ -140,4 +140,3 @@ def analyze_movies(df):
 if __name__ == "__main__":
     df = load_processed_data()
     franchise_stats, franchise_df, director_df = analyze_movies(df)
-
